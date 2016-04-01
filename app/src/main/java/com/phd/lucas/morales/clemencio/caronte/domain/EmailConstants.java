@@ -19,7 +19,7 @@ public interface EmailConstants {
      * The current password policy is the following:
      -At least 8 chars
 
-     -Does not contain space, tab, etc.
+     -Does not contain space.
 
      The individual rules can be added to the regex in order to create an stronger password criteria:
 
@@ -34,5 +34,5 @@ public interface EmailConstants {
 
      *
      */
-    String PASSWORD_REGEX = "^.*(?=.{8,}).*$";
+    String PASSWORD_REGEX = "^.*(?=.{8,})(?=\\S+$).*$";
 }

@@ -41,8 +41,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     //TODO 1: Programar lógica (a prueba de errores) del boton Register (comprobar los campos y la lógica- contraseñas coincidentes etc y registrarse)
         /*
-            A) Quitar toda referencia a thortful en las clases Email, EmailConstants y EmailTest
-            B) Ver por qué no funcionan los tests y averiguar como meter JUnit
             C) Seguir programando la logica del boton Register (abajo, en esta misma clase)
          */
     //TODO 2: Pensar que hacer con el RegisterActivity (cuadradito azul) que aparece en esta pantalla al hacer scroll hacia abajo
@@ -169,8 +167,8 @@ public class RegisterActivity extends AppCompatActivity {
                 String gender = (String) btn.getText();
 
                 String email = mEmail.getText().toString();
-                Email email1 = new Email(email, "", getApplicationContext());
-                email1.setApplicationContext(getApplicationContext());
+                //Email email1 = new Email(email, "", getApplicationContext());
+                //email1.setApplicationContext(getApplicationContext());
 
                 Toast.makeText(getApplicationContext(), "Gender: "+gender+". Email: "+email, Toast.LENGTH_SHORT).show();
 

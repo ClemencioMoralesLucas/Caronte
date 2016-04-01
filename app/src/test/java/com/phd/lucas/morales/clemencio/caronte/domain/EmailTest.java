@@ -1,13 +1,14 @@
 package com.phd.lucas.morales.clemencio.caronte.domain;
 
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.junit.Assert.*;
+
 /**
- * Created by Clemencio Morales Lucas on 31/03/2016.
+ * Created by Clemencio Morales Lucas on 01/04/2016.
  */
 public class EmailTest {
 
@@ -39,7 +40,7 @@ public class EmailTest {
     public static final String INVALID_PASSWORD_3 = "1234";
     public static final String INVALID_PASSWORD_4 = "Pas sword1";
     public static final String INVALID_PASSWORD_5 = "Pass wo    rd2";
-    public static final String INVALID_PASSWORD_6 = "   password123@";
+    public static final String INVALID_PASSWORD_6 = " password123@ ";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
