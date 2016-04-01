@@ -1,10 +1,11 @@
 package com.phd.lucas.morales.clemencio.caronte.domain;
 
+/*
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
+*/
 /**
  * Created by Clemencio Morales Lucas on 31/03/2016.
  */
@@ -40,7 +41,7 @@ public class EmailTest {
     public static final String INVALID_PASSWORD_5 = "Pass wo    rd2";
     public static final String INVALID_PASSWORD_6 = "   password123@";
 
-    @Rule
+    /*@Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
@@ -183,5 +184,5 @@ public class EmailTest {
     public void getReadyForException(final String message) {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage(message);
-    }
+    }*/
 }
