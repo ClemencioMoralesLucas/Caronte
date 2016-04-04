@@ -3,12 +3,13 @@ package com.phd.lucas.morales.clemencio.caronte.domain;
 /**
  * Created by Clemencio Morales Lucas on 31/03/2016.
  */
+
 import java.util.regex.Pattern;
 
 /**
  * General Email class (According to RFC 5322 Official Standard)
  */
-public class Email implements EmailConstants {
+public class Email implements EmailAndPasswordConstants {
 
     public static final String EMAIL_NOT_VALID = "The email address provided is not valid.";
     public static final String PASSWORD_NOT_VALID = "The password provided is not valid. The password should has at least 8 chars and does not contain any space.";
@@ -48,6 +49,4 @@ public class Email implements EmailConstants {
     public String getPassword(){
         return this.password;
     }
-
-
 }

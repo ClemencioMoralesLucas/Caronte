@@ -4,7 +4,7 @@ package com.phd.lucas.morales.clemencio.caronte.domain;
  * Created by Clemencio Morales Lucas on 31/03/2016.
  */
 
-public interface EmailConstants {
+public interface EmailAndPasswordConstants {
 
     /**
     * Email address pattern RFC 5322 Official Standard
