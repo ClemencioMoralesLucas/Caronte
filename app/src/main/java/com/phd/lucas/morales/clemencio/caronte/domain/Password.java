@@ -4,16 +4,12 @@ package com.phd.lucas.morales.clemencio.caronte.domain;
  * Created by Clemencio Morales Lucas on 31/03/2016.
  */
 
-public interface EmailAndPasswordConstants {
+import java.util.regex.Pattern;
 
-    /**
-    * Email address pattern RFC 5322 Official Standard
-    */
-    String EMAIL_REGEX = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:" +
-            "[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")" +
-            "@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01" +
-            "]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0" +
-            "c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+/**
+ * Custom Password class
+ */
+public class Password {
 
     /**
      * The current password policy is the following:
@@ -35,4 +31,27 @@ public interface EmailAndPasswordConstants {
      *
      */
     String PASSWORD_REGEX = "^.*(?=.{8,})(?=\\S+$).*$";
+
+    public static final String PASSWORD_NOT_VALID = "The password provided is not valid. The password should has at least 8 chars and does not contain any space.";
+    private String password;
+
+    Pattern passwordPattern = Pattern.compile(PASSWORD_REGEX);
+
+    public Password(final String password){
+        this.setPassword(password);
+    }
+
+    public Password(){}
+
+    public void setPassword(final String password){
+        if(passwordPattern.matcher(password).matches()){
+            this.password = password;
+        } else {
+            throw new IllegalArgumentException(PASSWORD_NOT_VALID);
+        }
+    }
+
+    public String getPassword(){
+        return this.password;
+    }
 }

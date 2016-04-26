@@ -92,5 +92,13 @@
 
     <string name = "invalid_email">The email address provided is not valid.</string>
     <string name = "invalid_password">The password provided is not valid. The password should has at least 8 chars and does not contain any space or tab.</string>
-
+    <string name = "different_passwords">The passwords provided do not match.</string>
+    <string name = "gender_not_present">A gender must be selected.</string>
+    <string name = "age_not_selected">An age must be selected.</string>
+    <string name = "ethnic_origin_not_selected">An ethnic origin must be selected.</string>
+    <string name = "marital_status_not_selected">A marital status must be selected.</string>
+    <string name = "education_level_not_selected">An education level must be selected.</string>
+    <string name = "working_situation_not_selected">A working situation must be selected.</string>
+    <string name = "annual_salary_not_selected">An annual salary must be selected.</string>
+    <string name = "disability_level_not_selected">A disability level must be selected.</string>
 </resources>

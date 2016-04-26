@@ -25,11 +25,11 @@ public class InitialActivity extends AppCompatActivity {
     private void setupFirebase() {
         //TODO See below to see how to create users
         Firebase.setAndroidContext(this);
-        Firebase myFirebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/");
-        myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
+        //Firebase myFirebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/");
+        //myFirebaseRef.child("message").setValue("Do you have data? You'll love Firebase.");
 
-        Firebase myFirebaseRef2 = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users/");
-        myFirebaseRef2.child("user1").setValue("Foo");
+        //Firebase myFirebaseRef2 = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users/");
+        //myFirebaseRef2.child("user1").setValue("Foo");
     }
 
     private void setupButtons() {

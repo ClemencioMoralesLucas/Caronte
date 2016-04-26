@@ -15,13 +15,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.phd.lucas.morales.clemencio.caronte.domain.Email;
+import com.phd.lucas.morales.clemencio.caronte.domain.Password;
+import com.phd.lucas.morales.clemencio.caronte.domain.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
+
+    public static final int UNSELECTED_GENDER = -1;
+    Firebase firebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com");
+    Firebase firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
 
     public static final int MAXIMUM_AGE = 100;
     public static final int MINIMUM_AGE = 10;
@@ -30,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_register);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -39,11 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         populateDropdowns();
     }
 
-    //TODO 1: Programar lógica (a prueba de errores) del boton Register (comprobar los campos y la lógica- contraseñas coincidentes etc y registrarse)
-        /*
-            C) Seguir programando la logica del boton Register (abajo, en esta misma clase)
-         */
-    //TODO 2: Pensar que hacer con el RegisterActivity (cuadradito azul) que aparece en esta pantalla al hacer scroll hacia abajo
+    //TODO: Pensar que hacer con el RegisterActivity (cuadradito azul) que aparece en esta pantalla al hacer scroll hacia abajo
     private void populateDropdowns(){
         populateAgeDropdown();
         populateEthnicGroupDropdown();
@@ -152,39 +159,154 @@ public class RegisterActivity extends AppCompatActivity {
         final Button registerButton = (Button) findViewById(R.id.buttonRegisterScreen);
         registerButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Register pressed", Toast.LENGTH_SHORT).show();
 
-                //  TODO Esto coge los datos, seguir programandolo
-                EditText mEmail = (EditText)findViewById(R.id.editText_enter_email_register_screen);
-                EditText mPassword = (EditText) findViewById(R.id.editText_enter_password_register_screen);
-                EditText mRepeatedPassword = (EditText) findViewById(R.id.editText_enter_password_repeat_register_screen);
+                registerUser();
 
-                RadioGroup radioGroupGender = (RadioGroup) findViewById(R.id.radioGroupGender);
-                int radioButtonID = radioGroupGender.getCheckedRadioButtonId();
-                View radioButton = radioGroupGender.findViewById(radioButtonID);
-                int index = radioGroupGender.indexOfChild(radioButton);
-                RadioButton btn = (RadioButton) radioGroupGender.getChildAt(index);
-                String gender = (String) btn.getText();
-
-                String email = mEmail.getText().toString();
-                //Email email1 = new Email(email, "", getApplicationContext());
-                //email1.setApplicationContext(getApplicationContext());
-
-                Toast.makeText(getApplicationContext(), "Gender: "+gender+". Email: "+email, Toast.LENGTH_SHORT).show();
-
+                //TODO Maybe here we should redireccionate to login or enter the application, making the login implicitly (second option more agile)
+                //TODO Password encryptation procedures (with salt scheme) remain
                 /*Intent myIntent = new Intent(InitialActivity.this, RegisterActivity.class);
-                EditText mEmail = (EditText)findViewById(R.id.editTextEmail);
-                EditText mPassword = (EditText)findViewById(R.id.editTextPassword);
-
-                String email = mEmail.getText().toString();
-                String password = mPassword.getText().toString();
-
-                myIntent.putExtra("email", email); //Optional parameters
-                myIntent.putExtra("password", password); //Optional parameters
-
                 InitialActivity.this.startActivity(myIntent);*/
             }
         });
+    }
+
+    private void registerUser() {
+        boolean success = true;
+        final User user = new User();
+
+        EditText mEmail = (EditText)findViewById(R.id.editText_enter_email_register_screen);
+        String email = mEmail.getText().toString();
+
+        EditText mPassword = (EditText) findViewById(R.id.editText_enter_password_register_screen);
+        String password = mPassword.getText().toString();
+
+        EditText mRepeatedPassword = (EditText) findViewById(R.id.editText_enter_password_repeat_register_screen);
+        String repeatedPassword = mRepeatedPassword.getText().toString();
+
+        try{
+            user.setEmail(new Email(email));
+            user.setPassword(new Password(password));
+        } catch(Exception e){
+            success = false;
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        if(!password.equals(repeatedPassword)){
+            success = false;
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.different_passwords), Toast.LENGTH_SHORT).show();
+        } else {
+            RadioGroup radioGroupGender = (RadioGroup) findViewById(R.id.radioGroupGender);
+            int radioButtonID = radioGroupGender.getCheckedRadioButtonId();
+            View radioButton = radioGroupGender.findViewById(radioButtonID);
+            int index = radioGroupGender.indexOfChild(radioButton);
+
+            if (index == UNSELECTED_GENDER){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.gender_not_present), Toast.LENGTH_SHORT).show();
+            } else {
+                RadioButton btn = (RadioButton) radioGroupGender.getChildAt(index);
+                String gender = (String) btn.getText();
+                user.setGender(gender);
+            }
+
+            Spinner ageSpinner =(Spinner) findViewById(R.id.spinnerAge);
+            String ageSpinnerValue = ageSpinner.getSelectedItem().toString();
+            if(ageSpinnerValue.equals(getResources().getString(R.string.select_age))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.age_not_selected), Toast.LENGTH_SHORT).show();
+            } else {
+                int age = Integer.parseInt(ageSpinner.getSelectedItem().toString());
+                user.setAge(age);
+            }
+
+            Spinner ethnicOriginSpinner =(Spinner) findViewById(R.id.spinnerEthnicGroup);
+            String ethnicOriginValue = ethnicOriginSpinner.getSelectedItem().toString();
+            if(ethnicOriginValue.equals(getResources().getString(R.string.select_ethnic_origin))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.ethnic_origin_not_selected), Toast.LENGTH_SHORT).show();
+            } else {
+                user.setEthnicOrigin(ethnicOriginValue);
+            }
+
+            Spinner maritalStatusSpinner =(Spinner) findViewById(R.id.spinnerMaritalStatus);
+            String maritalStatusValue = maritalStatusSpinner.getSelectedItem().toString();
+            if(maritalStatusValue.equals(getResources().getString(R.string.select_marital_status))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.marital_status_not_selected), Toast.LENGTH_SHORT).show();
+            } else{
+                user.setMaritalStatus(maritalStatusValue);
+            }
+
+            Spinner educationLevelSpinner =(Spinner) findViewById(R.id.spinnerEducationLevel);
+            String educationLevelValue = educationLevelSpinner.getSelectedItem().toString();
+            if(educationLevelValue.equals(getResources().getString(R.string.select_education_level))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.education_level_not_selected), Toast.LENGTH_SHORT).show();
+            } else{
+                user.setEducationLevel(educationLevelValue);
+            }
+
+            Spinner workingSituationSpinner =(Spinner) findViewById(R.id.spinnerWorkingSituation);
+            String workingSituationValue = workingSituationSpinner.getSelectedItem().toString();
+            if(workingSituationValue.equals(getResources().getString(R.string.select_working_situation))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.working_situation_not_selected), Toast.LENGTH_SHORT).show();
+            } else {
+                user.setWorkingSituation(workingSituationValue);
+            }
+
+            Spinner annualSalarySpinner =(Spinner) findViewById(R.id.spinnerSalaryPerYear);
+            String annualSalaryValue = annualSalarySpinner.getSelectedItem().toString();
+            if(annualSalaryValue.equals(getResources().getString(R.string.select_salary_per_year))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.annual_salary_not_selected), Toast.LENGTH_SHORT).show();
+            } else {
+                user.setSalaryPerYear(annualSalaryValue);
+            }
+
+            Spinner disabilityLevelSpinner =(Spinner) findViewById(R.id.spinnerDisabilityLevel);
+            String disabilityLevelValue = disabilityLevelSpinner.getSelectedItem().toString();
+            if(disabilityLevelValue.equals(getResources().getString(R.string.select_disability_level))){
+                success = false;
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.disability_level_not_selected), Toast.LENGTH_SHORT).show();
+            } else {
+                user.setDisabilityLevel(disabilityLevelValue);
+            }
+
+            if(success){
+                //Toast.makeText(getApplicationContext(), "Register OK.", Toast.LENGTH_SHORT).show();
+                //TODO Refactor this, create method and avoid magic numbers
+                String userId = user.getEmail().getAddress();
+                userId = userId.replace(".", "");
+                userId = userId.replace("#", "");
+                userId = userId.replace("$", "");
+                userId = userId.replace("[", "");
+                userId = userId.replace("]", "");
+
+                final String preparedUserId = userId;
+                //TODO Create persistence layer in an independent object
+                firebaseUsersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            //TODO Extract to strings.xml and create showToast() method
+                            Toast.makeText(getApplicationContext(), "The user already exists and cannot be created", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //TODO Extract to strings.xml
+                            Toast.makeText(getApplicationContext(), "New user created", Toast.LENGTH_SHORT).show();
+                            Firebase firebaseUserReference = firebaseRef.child("users").child(preparedUserId);
+                            firebaseUserReference.setValue(user);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) { }
+                });
+            } else{
+                Toast.makeText(getApplicationContext(), "There are errors in the form.", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 
