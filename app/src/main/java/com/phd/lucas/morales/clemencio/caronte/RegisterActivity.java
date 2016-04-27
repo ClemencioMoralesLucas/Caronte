@@ -30,9 +30,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     public static final int UNSELECTED_GENDER = -1;
 
-    Firebase firebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com");
-    Firebase firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
-
     public static final int MAXIMUM_AGE = 100;
     public static final int MINIMUM_AGE = 10;
     public static final int FIRST_POSITION = 0;
@@ -52,7 +49,6 @@ public class RegisterActivity extends AppCompatActivity {
         populateDropdowns();
     }
 
-    //TODO: Pensar que hacer con el RegisterActivity (cuadradito azul) que aparece en esta pantalla al hacer scroll hacia abajo
     private void populateDropdowns(){
         populateAgeDropdown();
         populateEthnicGroupDropdown();
@@ -163,9 +159,6 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 registerUser();
-                //TODO REFACTOR OVER REGISTERING LOGIN
-                //SEE ALL TODO COMMENTS, APPLICATE THEM AND CREATE PERSISTENCE LAYER FOR OBJECTS RETRIEVAL FROM DB
-
 
                 //TODO Maybe here we should redireccionate to login or enter the application, making the login implicitly (second option more agile)
                 //TODO Password encryptation procedures (with salt scheme) remain
