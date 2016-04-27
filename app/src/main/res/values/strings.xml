@@ -101,4 +101,10 @@
     <string name = "working_situation_not_selected">A working situation must be selected.</string>
     <string name = "annual_salary_not_selected">An annual salary must be selected.</string>
     <string name = "disability_level_not_selected">A disability level must be selected.</string>
+
+    <string name = "new_user_created">New user successfully created</string>
+    <string name = "user_already_exists">The user already exists and cannot be created</string>
+    <string name = "errors_in_the_form">There are errors in the form</string>
+    <string name = "firebase_error">The database is not available. Please check your connection and try again later.</string>
+
 </resources>

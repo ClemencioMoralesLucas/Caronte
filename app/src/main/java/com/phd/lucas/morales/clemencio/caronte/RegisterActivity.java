@@ -161,6 +161,9 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 registerUser();
+                //TODO REFACTOR OVER REGISTERING LOGIN
+                //SEE ALL TODO COMMENTS, APPLICATE THEM AND CREATE PERSISTENCE LAYER FOR OBJECTS RETRIEVAL FROM DB
+
 
                 //TODO Maybe here we should redireccionate to login or enter the application, making the login implicitly (second option more agile)
                 //TODO Password encryptation procedures (with salt scheme) remain
@@ -188,12 +191,12 @@ public class RegisterActivity extends AppCompatActivity {
             user.setPassword(new Password(password));
         } catch(Exception e){
             success = false;
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            showToast(e.getMessage());
         }
 
         if(!password.equals(repeatedPassword)){
             success = false;
-            Toast.makeText(getApplicationContext(), getResources().getString(R.string.different_passwords), Toast.LENGTH_SHORT).show();
+            showToast(getResources().getString(R.string.different_passwords));
         } else {
             RadioGroup radioGroupGender = (RadioGroup) findViewById(R.id.radioGroupGender);
             int radioButtonID = radioGroupGender.getCheckedRadioButtonId();
@@ -202,7 +205,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             if (index == UNSELECTED_GENDER){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.gender_not_present), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.gender_not_present));
             } else {
                 RadioButton btn = (RadioButton) radioGroupGender.getChildAt(index);
                 String gender = (String) btn.getText();
@@ -213,7 +216,7 @@ public class RegisterActivity extends AppCompatActivity {
             String ageSpinnerValue = ageSpinner.getSelectedItem().toString();
             if(ageSpinnerValue.equals(getResources().getString(R.string.select_age))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.age_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.age_not_selected));
             } else {
                 int age = Integer.parseInt(ageSpinner.getSelectedItem().toString());
                 user.setAge(age);
@@ -223,7 +226,7 @@ public class RegisterActivity extends AppCompatActivity {
             String ethnicOriginValue = ethnicOriginSpinner.getSelectedItem().toString();
             if(ethnicOriginValue.equals(getResources().getString(R.string.select_ethnic_origin))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.ethnic_origin_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.ethnic_origin_not_selected));
             } else {
                 user.setEthnicOrigin(ethnicOriginValue);
             }
@@ -232,7 +235,7 @@ public class RegisterActivity extends AppCompatActivity {
             String maritalStatusValue = maritalStatusSpinner.getSelectedItem().toString();
             if(maritalStatusValue.equals(getResources().getString(R.string.select_marital_status))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.marital_status_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.marital_status_not_selected));
             } else{
                 user.setMaritalStatus(maritalStatusValue);
             }
@@ -241,7 +244,7 @@ public class RegisterActivity extends AppCompatActivity {
             String educationLevelValue = educationLevelSpinner.getSelectedItem().toString();
             if(educationLevelValue.equals(getResources().getString(R.string.select_education_level))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.education_level_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.education_level_not_selected));
             } else{
                 user.setEducationLevel(educationLevelValue);
             }
@@ -250,7 +253,7 @@ public class RegisterActivity extends AppCompatActivity {
             String workingSituationValue = workingSituationSpinner.getSelectedItem().toString();
             if(workingSituationValue.equals(getResources().getString(R.string.select_working_situation))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.working_situation_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.working_situation_not_selected));
             } else {
                 user.setWorkingSituation(workingSituationValue);
             }
@@ -259,7 +262,7 @@ public class RegisterActivity extends AppCompatActivity {
             String annualSalaryValue = annualSalarySpinner.getSelectedItem().toString();
             if(annualSalaryValue.equals(getResources().getString(R.string.select_salary_per_year))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.annual_salary_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.annual_salary_not_selected));
             } else {
                 user.setSalaryPerYear(annualSalaryValue);
             }
@@ -268,7 +271,7 @@ public class RegisterActivity extends AppCompatActivity {
             String disabilityLevelValue = disabilityLevelSpinner.getSelectedItem().toString();
             if(disabilityLevelValue.equals(getResources().getString(R.string.select_disability_level))){
                 success = false;
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.disability_level_not_selected), Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.disability_level_not_selected));
             } else {
                 user.setDisabilityLevel(disabilityLevelValue);
             }
@@ -277,11 +280,11 @@ public class RegisterActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "Register OK.", Toast.LENGTH_SHORT).show();
                 //TODO Refactor this, create method and avoid magic numbers
                 String userId = user.getEmail().getAddress();
-                userId = userId.replace(".", "");
-                userId = userId.replace("#", "");
-                userId = userId.replace("$", "");
-                userId = userId.replace("[", "");
-                userId = userId.replace("]", "");
+                userId = userId.replace(".", "");//%2E
+                userId = userId.replace("#", "");//%23
+                userId = userId.replace("$", "");//%24
+                userId = userId.replace("[", "");//%5B
+                userId = userId.replace("]", "");//%5D
 
                 final String preparedUserId = userId;
                 //TODO Create persistence layer in an independent object
@@ -289,26 +292,29 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            //TODO Extract to strings.xml and create showToast() method
-                            Toast.makeText(getApplicationContext(), "The user already exists and cannot be created", Toast.LENGTH_SHORT).show();
+                            showToast(getResources().getString(R.string.user_already_exists));
                         }
                         else {
-                            //TODO Extract to strings.xml
-                            Toast.makeText(getApplicationContext(), "New user created", Toast.LENGTH_SHORT).show();
+                            showToast(getResources().getString(R.string.new_user_created));
                             Firebase firebaseUserReference = firebaseRef.child("users").child(preparedUserId);
                             firebaseUserReference.setValue(user);
                         }
                     }
 
                     @Override
-                    public void onCancelled(FirebaseError firebaseError) { }
+                    public void onCancelled(FirebaseError firebaseError) {
+                        showToast(getResources().getString(R.string.firebase_error));
+                    }
                 });
             } else{
-                Toast.makeText(getApplicationContext(), "There are errors in the form.", Toast.LENGTH_SHORT).show();
+                showToast(getResources().getString(R.string.errors_in_the_form));
             }
         }
     }
 
+    private void showToast(final String message){
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
 
     private void retrieveEmailAndPassword() {
         Bundle extras = getIntent().getExtras();
