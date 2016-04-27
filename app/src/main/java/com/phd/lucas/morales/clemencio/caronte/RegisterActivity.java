@@ -15,13 +15,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.phd.lucas.morales.clemencio.caronte.domain.Email;
 import com.phd.lucas.morales.clemencio.caronte.domain.Password;
 import com.phd.lucas.morales.clemencio.caronte.domain.User;
+import com.phd.lucas.morales.clemencio.caronte.interfaces.CustomHandler;
+import com.phd.lucas.morales.clemencio.caronte.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +36,8 @@ public class RegisterActivity extends AppCompatActivity {
     public static final int MAXIMUM_AGE = 100;
     public static final int MINIMUM_AGE = 10;
     public static final int FIRST_POSITION = 0;
+
+    private UserRepository userRepository = new UserRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,7 +205,7 @@ public class RegisterActivity extends AppCompatActivity {
             View radioButton = radioGroupGender.findViewById(radioButtonID);
             int index = radioGroupGender.indexOfChild(radioButton);
 
-            if (index == UNSELECTED_GENDER){
+            if (index == UNSELECTED_GENDER) {
                 success = false;
                 showToast(getResources().getString(R.string.gender_not_present));
             } else {
@@ -213,9 +214,9 @@ public class RegisterActivity extends AppCompatActivity {
                 user.setGender(gender);
             }
 
-            Spinner ageSpinner =(Spinner) findViewById(R.id.spinnerAge);
+            Spinner ageSpinner = (Spinner) findViewById(R.id.spinnerAge);
             String ageSpinnerValue = ageSpinner.getSelectedItem().toString();
-            if(ageSpinnerValue.equals(getResources().getString(R.string.select_age))){
+            if (ageSpinnerValue.equals(getResources().getString(R.string.select_age))) {
                 success = false;
                 showToast(getResources().getString(R.string.age_not_selected));
             } else {
@@ -223,88 +224,83 @@ public class RegisterActivity extends AppCompatActivity {
                 user.setAge(age);
             }
 
-            Spinner ethnicOriginSpinner =(Spinner) findViewById(R.id.spinnerEthnicGroup);
+            Spinner ethnicOriginSpinner = (Spinner) findViewById(R.id.spinnerEthnicGroup);
             String ethnicOriginValue = ethnicOriginSpinner.getSelectedItem().toString();
-            if(ethnicOriginValue.equals(getResources().getString(R.string.select_ethnic_origin))){
+            if (ethnicOriginValue.equals(getResources().getString(R.string.select_ethnic_origin))) {
                 success = false;
                 showToast(getResources().getString(R.string.ethnic_origin_not_selected));
             } else {
                 user.setEthnicOrigin(ethnicOriginValue);
             }
 
-            Spinner maritalStatusSpinner =(Spinner) findViewById(R.id.spinnerMaritalStatus);
+            Spinner maritalStatusSpinner = (Spinner) findViewById(R.id.spinnerMaritalStatus);
             String maritalStatusValue = maritalStatusSpinner.getSelectedItem().toString();
-            if(maritalStatusValue.equals(getResources().getString(R.string.select_marital_status))){
+            if (maritalStatusValue.equals(getResources().getString(R.string.select_marital_status))) {
                 success = false;
                 showToast(getResources().getString(R.string.marital_status_not_selected));
-            } else{
+            } else {
                 user.setMaritalStatus(maritalStatusValue);
             }
 
-            Spinner educationLevelSpinner =(Spinner) findViewById(R.id.spinnerEducationLevel);
+            Spinner educationLevelSpinner = (Spinner) findViewById(R.id.spinnerEducationLevel);
             String educationLevelValue = educationLevelSpinner.getSelectedItem().toString();
-            if(educationLevelValue.equals(getResources().getString(R.string.select_education_level))){
+            if (educationLevelValue.equals(getResources().getString(R.string.select_education_level))) {
                 success = false;
                 showToast(getResources().getString(R.string.education_level_not_selected));
-            } else{
+            } else {
                 user.setEducationLevel(educationLevelValue);
             }
 
-            Spinner workingSituationSpinner =(Spinner) findViewById(R.id.spinnerWorkingSituation);
+            Spinner workingSituationSpinner = (Spinner) findViewById(R.id.spinnerWorkingSituation);
             String workingSituationValue = workingSituationSpinner.getSelectedItem().toString();
-            if(workingSituationValue.equals(getResources().getString(R.string.select_working_situation))){
+            if (workingSituationValue.equals(getResources().getString(R.string.select_working_situation))) {
                 success = false;
                 showToast(getResources().getString(R.string.working_situation_not_selected));
             } else {
                 user.setWorkingSituation(workingSituationValue);
             }
 
-            Spinner annualSalarySpinner =(Spinner) findViewById(R.id.spinnerSalaryPerYear);
+            Spinner annualSalarySpinner = (Spinner) findViewById(R.id.spinnerSalaryPerYear);
             String annualSalaryValue = annualSalarySpinner.getSelectedItem().toString();
-            if(annualSalaryValue.equals(getResources().getString(R.string.select_salary_per_year))){
+            if (annualSalaryValue.equals(getResources().getString(R.string.select_salary_per_year))) {
                 success = false;
                 showToast(getResources().getString(R.string.annual_salary_not_selected));
             } else {
                 user.setSalaryPerYear(annualSalaryValue);
             }
 
-            Spinner disabilityLevelSpinner =(Spinner) findViewById(R.id.spinnerDisabilityLevel);
+            Spinner disabilityLevelSpinner = (Spinner) findViewById(R.id.spinnerDisabilityLevel);
             String disabilityLevelValue = disabilityLevelSpinner.getSelectedItem().toString();
-            if(disabilityLevelValue.equals(getResources().getString(R.string.select_disability_level))){
+            if (disabilityLevelValue.equals(getResources().getString(R.string.select_disability_level))) {
                 success = false;
                 showToast(getResources().getString(R.string.disability_level_not_selected));
             } else {
                 user.setDisabilityLevel(disabilityLevelValue);
             }
 
-            if(success){
-                String userId = user.getEmail().getAddress();
-                userId = Email.encodeID(userId);
-
-                final String preparedUserId = userId;
-                //TODO Create persistence layer in an independent object
-                firebaseUsersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            showToast(getResources().getString(R.string.user_already_exists));
-                        }
-                        else {
-                            showToast(getResources().getString(R.string.new_user_created));
-                            Firebase firebaseUserReference = firebaseRef.child("users").child(preparedUserId);
-                            firebaseUserReference.setValue(user);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        showToast(getResources().getString(R.string.firebase_error));
-                    }
-                });
-            } else{
+            if (success) {
+                saveUser(user);
+            }
+            else{
                 showToast(getResources().getString(R.string.errors_in_the_form));
             }
         }
+    }
+
+    private void saveUser(User user) {
+        userRepository.addUser(user, new CustomHandler() {
+            @Override
+            public void handleResult(String response) {
+                if (response.equals(UserRepository.USER_ALREADY_EXISTS)) {
+                    showToast(getResources().getString(R.string.user_already_exists));
+                } else if (response.equals(UserRepository.FIREBASE_ERROR)) {
+                    showToast(getResources().getString(R.string.firebase_error));
+                }
+                else if(response.equals(UserRepository.NEW_USER_CREATED)){
+                    showToast(getResources().getString(R.string.new_user_created));
+                }
+            }
+        });
     }
 
     private void showToast(final String message){
