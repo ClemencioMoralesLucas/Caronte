@@ -30,6 +30,7 @@ import java.util.List;
 public class RegisterActivity extends AppCompatActivity {
 
     public static final int UNSELECTED_GENDER = -1;
+
     Firebase firebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com");
     Firebase firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
 
@@ -277,14 +278,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             if(success){
-                //Toast.makeText(getApplicationContext(), "Register OK.", Toast.LENGTH_SHORT).show();
-                //TODO Refactor this, create method and avoid magic numbers
                 String userId = user.getEmail().getAddress();
-                userId = userId.replace(".", "");//%2E
-                userId = userId.replace("#", "");//%23
-                userId = userId.replace("$", "");//%24
-                userId = userId.replace("[", "");//%5B
-                userId = userId.replace("]", "");//%5D
+                userId = Email.encodeID(userId);
 
                 final String preparedUserId = userId;
                 //TODO Create persistence layer in an independent object
