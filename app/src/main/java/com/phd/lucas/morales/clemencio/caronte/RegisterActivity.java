@@ -33,12 +33,13 @@ public class RegisterActivity extends AppCompatActivity {
     public static final int MINIMUM_AGE = 10;
     public static final int FIRST_POSITION = 0;
 
-    private UserRepository userRepository = new UserRepository();
+    private UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Firebase.setAndroidContext(this);
+        userRepository = new UserRepository(this.getApplicationContext());
         setContentView(R.layout.activity_register);
 
         setupRegisterButton();

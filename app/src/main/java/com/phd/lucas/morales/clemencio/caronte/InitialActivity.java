@@ -2,6 +2,7 @@ package com.phd.lucas.morales.clemencio.caronte;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Menu;
@@ -11,12 +12,22 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.phd.lucas.morales.clemencio.caronte.domain.Email;
+import com.phd.lucas.morales.clemencio.caronte.domain.Password;
+import com.phd.lucas.morales.clemencio.caronte.domain.User;
+import com.phd.lucas.morales.clemencio.caronte.handlers.UsersHandler;
+import com.phd.lucas.morales.clemencio.caronte.repository.UserRepository;
+
+import java.util.List;
 
 public class InitialActivity extends AppCompatActivity {
+
+    UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userRepository = new UserRepository(this.getApplicationContext());
         setupFirebase();
         setContentView(R.layout.activity_initial);
         setupButtons();
@@ -42,13 +53,76 @@ public class InitialActivity extends AppCompatActivity {
         final Button loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //Toast.makeText(getApplicationContext(), "Login pressed", Toast.LENGTH_SHORT).show();
-
                 Intent myIntent = new Intent(InitialActivity.this, LoginActivity.class);
-                //myIntent.putExtra("key", value); //Optional parameters
-                InitialActivity.this.startActivity(myIntent);
+
+                String email = getEmail();
+                String password = getPassword();
+
+                boolean success = true;
+                User user = new User();
+                try {
+                    user.setEmail(new Email(email));
+                    user.setPassword(new Password(password));
+                } catch (Exception e) {
+                    success = false;
+                    showToast(e.getMessage());
+                }
+
+                if(isValidCredential(email, password)) {
+                    showToast("Login OK");
+                } else {
+                    showToast("Invalid credentials");
+                    success = false;
+                }
+
+                if (success) {
+                    //TODO Investigate login approaches in Android
+                    myIntent.putExtra("user_authenticated", true);
+                    InitialActivity.this.startActivity(myIntent);
+                }
             }
         });
+    }
+
+
+    private boolean isValidCredential(final String enteredEmail, final String enteredPassword){
+        boolean success = false;
+        User user = userRepository.retrieveUserByEmail(enteredEmail);
+
+        if(user.getEmail().getAddress().equals(enteredEmail)){
+            if(user.getPassword().getPassword().equals(enteredPassword)){
+                success = true;
+            }
+        }
+        return success;
+    }
+
+    private void retrieveAllUsers() {
+        userRepository.retrieveAllUsers(new UsersHandler() {
+            @Override
+            public void handleResult(String response) {
+            }
+
+            @Override
+            public void onUsersLoaded(List<User> users) {
+                for (User item : users) {
+                    //userList.add(item);
+                    //showToast(item.toString());
+                }
+            }
+        });
+    }
+
+    @NonNull
+    private String getEmail() {
+        EditText mEmail = (EditText) findViewById(R.id.editTextEmail);
+        return mEmail.getText().toString();
+    }
+
+    @NonNull
+    private String getPassword(){
+        EditText mPassword = (EditText) findViewById(R.id.editTextPassword);
+        return mPassword.getText().toString();
     }
 
     private void registerButton() {
@@ -107,16 +181,7 @@ public class InitialActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /*protected void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
-        setContentView(R.layout.content_login);
-
-        final Button button = (Button) findViewById(R.id.loginButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Login pressed", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }*/
+    private void showToast(final String message){
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
 }

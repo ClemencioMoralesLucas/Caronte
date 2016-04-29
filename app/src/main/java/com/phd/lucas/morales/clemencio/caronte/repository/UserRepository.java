@@ -1,5 +1,7 @@
 package com.phd.lucas.morales.clemencio.caronte.repository;
 
+import android.content.Context;
+
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -21,8 +23,8 @@ public class UserRepository {
     public static final String USER_ALREADY_EXISTS = "User already exists";
     public static final String FIREBASE_ERROR = "Firebase error";
     public static final String NEW_USER_CREATED = "New user created";
-    Firebase firebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com");
-    Firebase firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
+    Firebase firebaseRef;
+    Firebase firebaseUsersRef;
 
     //TODO Remaining methods
     //Fix retrieveAllUsers
@@ -30,7 +32,11 @@ public class UserRepository {
     //Update user
     //Delete user
 
-    public UserRepository(){}
+    public UserRepository(Context context){
+        Firebase.setAndroidContext(context);
+        firebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com");
+        firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
+    }
 
     public void addUser(final User user, final UsersHandler usersHandler){
         final String encodedUserId = Email.encodeID(user.getEmail().getAddress());
@@ -54,7 +60,7 @@ public class UserRepository {
     }
 
     //Mocked method, // FIXME: 29/04/2016
-    public User retrieveUser(String email){
+    public User retrieveUserByEmail(String email){
         User user = new User();
         user.setEmail(new Email("mail@clemenciomorales.com"));
         user.setPassword(new Password("pepepepe"));
