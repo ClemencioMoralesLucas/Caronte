@@ -5,6 +5,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.phd.lucas.morales.clemencio.caronte.domain.Email;
+import com.phd.lucas.morales.clemencio.caronte.domain.Password;
 import com.phd.lucas.morales.clemencio.caronte.domain.User;
 import com.phd.lucas.morales.clemencio.caronte.handlers.UsersHandler;
 
@@ -24,6 +25,8 @@ public class UserRepository {
     Firebase firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
 
     //TODO Remaining methods
+    //Fix retrieveAllUsers
+    //retrieveUser
     //Update user
     //Delete user
 
@@ -50,6 +53,14 @@ public class UserRepository {
         });
     }
 
+    //Mocked method, // FIXME: 29/04/2016
+    public User retrieveUser(String email){
+        User user = new User();
+        user.setEmail(new Email("mail@clemenciomorales.com"));
+        user.setPassword(new Password("pepepepe"));
+        return user;
+    }
+
     public void retrieveAllUsers(final UsersHandler usersHandler) {
         final List<User> users = new ArrayList<User>();
         firebaseUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -63,7 +74,17 @@ public class UserRepository {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {}
+            public void onCancelled(FirebaseError firebaseError) {
+            }
         });
     }
+
+    /*
+    TODO Extracted from Firebase docs, implement it
+    public void updateUser(){
+        Firebase alanRef = usersRef.child("alanisawesome");
+        Map<String, Object> nickname = new HashMap<String, Object>();
+        nickname.put("nickname", "Alan The Machine");
+        alanRef.updateChildren(nickname);
+    }*/
 }
