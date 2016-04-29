@@ -6,7 +6,10 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.phd.lucas.morales.clemencio.caronte.domain.Email;
 import com.phd.lucas.morales.clemencio.caronte.domain.User;
-import com.phd.lucas.morales.clemencio.caronte.interfaces.CustomHandler;
+import com.phd.lucas.morales.clemencio.caronte.handlers.UsersHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Clemencio Morales Lucas on 27/04/2016.
@@ -19,30 +22,48 @@ public class UserRepository {
     public static final String NEW_USER_CREATED = "New user created";
     Firebase firebaseRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com");
     Firebase firebaseUsersRef = new Firebase("https://clemencio-morales-lucas-caronte.firebaseio.com/users");
-    //Create user
-    //Read user
-    //Read all users
+
+    //TODO Remaining methods
     //Update user
     //Delete user
 
-    public void addUser(final User user, final CustomHandler customHandler){
+    public UserRepository(){}
+
+    public void addUser(final User user, final UsersHandler usersHandler){
         final String encodedUserId = Email.encodeID(user.getEmail().getAddress());
         firebaseUsersRef.child(encodedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    customHandler.handleResult(USER_ALREADY_EXISTS);
+                    usersHandler.handleResult(USER_ALREADY_EXISTS);
                 } else {
                     Firebase firebaseUserReference = firebaseRef.child(USERS_TABLE).child(encodedUserId);
                     firebaseUserReference.setValue(user);
-                    customHandler.handleResult(NEW_USER_CREATED);
+                    usersHandler.handleResult(NEW_USER_CREATED);
                 }
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) {
-                customHandler.handleResult(FIREBASE_ERROR);
+                usersHandler.handleResult(FIREBASE_ERROR);
             }
+        });
+    }
+
+    public void retrieveAllUsers(final UsersHandler usersHandler) {
+        final List<User> users = new ArrayList<User>();
+        firebaseUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    User user = snapshot.getValue(User.class);
+                    users.add(user);
+                }
+                usersHandler.onUsersLoaded(users);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {}
         });
     }
 }
