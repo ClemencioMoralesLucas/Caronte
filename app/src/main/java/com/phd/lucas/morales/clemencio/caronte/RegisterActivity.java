@@ -18,7 +18,7 @@ import com.firebase.client.Firebase;
 import com.phd.lucas.morales.clemencio.caronte.domain.Email;
 import com.phd.lucas.morales.clemencio.caronte.domain.Password;
 import com.phd.lucas.morales.clemencio.caronte.domain.User;
-import com.phd.lucas.morales.clemencio.caronte.interfaces.CustomHandler;
+import com.phd.lucas.morales.clemencio.caronte.handlers.UsersHandler;
 import com.phd.lucas.morales.clemencio.caronte.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -277,7 +277,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUser(User user) {
-        userRepository.addUser(user, new CustomHandler() {
+        userRepository.addUser(user, new UsersHandler() {
             @Override
             public void handleResult(String response) {
                 if (response.equals(UserRepository.USER_ALREADY_EXISTS)) {
