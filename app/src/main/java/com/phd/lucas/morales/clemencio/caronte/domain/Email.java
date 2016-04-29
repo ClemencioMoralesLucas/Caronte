@@ -6,9 +6,13 @@ package com.phd.lucas.morales.clemencio.caronte.domain;
 
 import java.util.regex.Pattern;
 
+import lombok.ToString;
+
 /**
  * General Email class (According to RFC 5322 Official Standard)
  */
+
+@ToString(exclude="EMAIL_REGEX, emailPattern")
 public class Email {
 
     /**

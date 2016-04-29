@@ -6,9 +6,13 @@ package com.phd.lucas.morales.clemencio.caronte.domain;
 
 import java.util.regex.Pattern;
 
+import lombok.ToString;
+
 /**
  * Custom Password class
  */
+
+@ToString(exclude = "PASSWORD_REGEX, passwordPattern")
 public class Password {
 
     /**

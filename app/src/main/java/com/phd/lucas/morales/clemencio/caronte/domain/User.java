@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Created by Clemencio Morales Lucas on 31/03/2016.
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 @Data
 @NoArgsConstructor
+@ToString
 public class User {
 
     @Getter @Setter private Email email;
