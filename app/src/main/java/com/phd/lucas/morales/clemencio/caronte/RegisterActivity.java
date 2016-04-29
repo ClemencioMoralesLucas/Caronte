@@ -3,7 +3,6 @@ package com.phd.lucas.morales.clemencio.caronte;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -41,11 +40,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Firebase.setAndroidContext(this);
         setContentView(R.layout.activity_register);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         setupRegisterButton();
-        retrieveEmailAndPassword();
         populateDropdowns();
     }
 
@@ -293,19 +289,13 @@ public class RegisterActivity extends AppCompatActivity {
                     showToast(getResources().getString(R.string.new_user_created));
                 }
             }
+
+            @Override
+            public void onUsersLoaded(List<User> users) {}
         });
     }
 
     private void showToast(final String message){
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void retrieveEmailAndPassword() {
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String email = extras.getString("email");
-            String password = extras.getString("password");
-            Toast.makeText(getApplicationContext(), "Email: "+email+".\n Password: "+password, Toast.LENGTH_SHORT).show();
-        }
     }
 }
